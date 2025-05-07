@@ -10,7 +10,7 @@ ui <- page_fluid(
     nav_panel("General Description", 
               h3("Overview"),
               p("Puerto Rico is an unincorporated territory of the United States located in the northeastern Caribbean Sea.It lies east of the Dominican Republic and west of the U.S. Virgin Islands, situated between the Atlantic Ocean and the Caribbean Sea."),
-              
+              img(src = "puerto_rico.jpg.avif", width = "80%"),
               h4("Land Area"),
               p("Puerto Rico covers approximately 9,104 square kilometers (3,515 square miles), about the size of the U.S. state of Connecticut."),
               
@@ -43,7 +43,6 @@ ui <- page_fluid(
     nav_panel("Map & Key Facts",
               h3("Puerto Rico Map"),
               leafletOutput("island_map"),
-              img(src = "puerto_rico.jpg", width = "80%"),
               br(),
               p("This map shows the location of San Juan, Puerto Rico.")
     ),
