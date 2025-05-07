@@ -9,13 +9,41 @@ ui <- page_fluid(
   navset_card_pill(
     nav_panel("General Description", 
               h3("Overview"),
-              p("Puerto Rico is a U.S. territory located in the Caribbean."),
-              p("It has a rich culture and history, and a population of about 3.2 million people.")
+              p("Puerto Rico is an unincorporated territory of the United States located in the northeastern Caribbean Sea.It lies east of the Dominican Republic and west of the U.S. Virgin Islands, situated between the Atlantic Ocean and the Caribbean Sea."),
+              
+              h4("Land Area"),
+              p("Puerto Rico covers approximately 9,104 square kilometers (3,515 square miles), about the size of the U.S. state of Connecticut."),
+              
+              h4("Climate and Temperature Zone"),
+              p("The island has a tropical rainforest climate with an average annual temperature of 26°C (78°F)."),
+              p("It remains warm year-round with minimal seasonal variation. Hurricane season lasts from June through November."),
+              
+              h4("Terrain and Nature"),
+              p("Puerto Rico features a mountainous interior dominated by the Cordillera Central, with coastal lowlands and beaches along the edges."),
+              p("It sits near the Caribbean Plate and occasionally experiences seismic activity."),
+              
+              h4("Capital and Cities"),
+              p("The capital and largest city is San Juan. Other major cities include Ponce, Mayagüez, and Bayamón."),
+              
+              h4("Population and Language"),
+              p("Puerto Rico has a population of approximately 3.2 million people. Spanish and English are both official languages, with Spanish being more widely spoken."),
+              
+              h4("Currency and Political Status"),
+              p("The island uses the U.S. Dollar (USD). As a U.S. territory, its residents are U.S. citizens but cannot vote in presidential elections."),
+              p("Puerto Rico has its own constitution and exercises local self-governance.")
     ),
+
     
+    
+    
+    
+    
+    
+        
     nav_panel("Map & Key Facts",
               h3("Puerto Rico Map"),
               leafletOutput("island_map"),
+              img(src = "puerto_rico.jpg", width = "80%"),
               br(),
               p("This map shows the location of San Juan, Puerto Rico.")
     ),
