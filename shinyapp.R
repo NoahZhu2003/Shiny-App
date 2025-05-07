@@ -6,6 +6,7 @@ library(readr)
 library(tidyr)
 library(ggplot2)
 
+
 #data analysis
 raw_data <- read_csv("Data/population.csv", skip = 4)
 
@@ -24,6 +25,15 @@ pr_pop_long <- pr_pop %>%
     population = as.numeric(population)
   ) %>%
   filter(!is.na(population))
+
+
+race_data <- data.frame(
+  year = c(1960, 1970, 1980, 1990, 2000, 2010, 2020),
+  white = c(79.7, 80.5, 80.5, 80.5, 80.5, 75.8, 17.1),
+  non_white = c(20.3, 19.5, 19.5, 19.5, 19.5, 24.2, 82.9)
+)
+
+
 
 
 
@@ -83,14 +93,21 @@ ui <- page_fluid(
     
     nav_panel("Demographics", 
               h3("Demographic Data"),
-              p("Demographic information will go here."),
               sliderInput("year", "Select Year:",
-                          min = min(pr_pop_long$year),
-                          max = max(pr_pop_long$year),
-                          value = max(pr_pop_long$year),
+                          min = 1960,
+                          max = 2023,
+                          value = 2023,
                           step = 1),
+              plotOutput("population_plot", height = "300px"),
               
-              plotOutput("population_plot", height = "300px", width = "50%")
+              fluidRow(
+                column(6, plotOutput("race_pie", height = "300px")),
+                column(6, tableOutput("race_table"),"Race Composition by Decade (%)",
+                       tableOutput("race_table"),)
+              ),
+              p("The decrease in the White population is primarily due to changes in how the race question was asked and how people responded — not due to population decline. (U.S. Census Bureau, 2021)")
+              
+              
     ),
     
     
@@ -119,7 +136,8 @@ ui <- page_fluid(
 )
 
 server <- function(input, output, session) {
-  
+
+  #map
   output$island_map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%
@@ -127,7 +145,7 @@ server <- function(input, output, session) {
       addMarkers(lng = -66.1, lat = 18.4, popup = "San Juan, Puerto Rico")
   })
   
-  
+  #population plot
   output$population_plot <- renderPlot({
     selected_year <- input$year
     
@@ -150,6 +168,48 @@ server <- function(input, output, session) {
       )
 
   })
+  
+  
+  
+  #race plot
+  
+  output$race_table <- renderTable({
+    race_data
+  }, digits = 1, bordered = TRUE, striped = TRUE, spacing = "m", align = "c")
+  
+  
+  output$race_pie <- renderPlot({
+    # 取十年档：1960–1969 → 1960，以此类推
+    decade_year <- floor(input$year / 10) * 10
+    
+    # 安全检查：只有在 race_data 包含该年份时才继续
+    if (decade_year %in% race_data$year) {
+      race_slice <- race_data[race_data$year == decade_year, ]
+      
+      pie_df <- data.frame(
+        category = c("White", "Non-White"),
+        percentage = c(race_slice$white, race_slice$non_white)
+      )
+      
+      ggplot(pie_df, aes(x = "", y = percentage, fill = category)) +
+        geom_bar(stat = "identity", width = 1) +
+        coord_polar(theta = "y") +
+        labs(title = paste("Race Breakdown (approx.):", decade_year)) +
+        theme_void(base_size = 14) +
+        theme(
+          plot.title = element_text(face = "bold", hjust = 0.5),
+          legend.title = element_blank(),
+          legend.position = "right"
+        ) +
+        scale_fill_manual(values = c("White" = "skyblue", "Non-White" = "darkorange"))
+    }
+      
+  })
+  
+
+  
+  
+  
   
 }
 
