@@ -95,6 +95,12 @@ ui <- page_fluid(
               h4("Terrain and Nature"),
               p("Puerto Rico features a mountainous interior dominated by the Cordillera Central, with coastal lowlands and beaches along the edges."),
               p("It sits near the Caribbean Plate and occasionally experiences seismic activity."),
+              tags$div(
+                style = "text-align: center; margin: 20px 0;",
+                img(src = "beaches.jpg", width = "500px", 
+                    style = "border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);")
+              ),
+              tags$p(style = "text-align: center; font-style: italic; color: #555;"),
               
               h4("Capital and Cities"),
               p("The capital and largest city is San Juan. Other major cities include Ponce, Mayagüez, and Bayamón."),
@@ -104,7 +110,13 @@ ui <- page_fluid(
               
               h4("Currency and Political Status"),
               p("The island uses the U.S. Dollar (USD). As a U.S. territory, its residents are U.S. citizens but cannot vote in presidential elections."),
-              p("Puerto Rico has its own constitution and exercises local self-governance.")
+              p("Puerto Rico has its own constitution and exercises local self-governance."),
+              tags$div(
+                style = "text-align: center; margin: 20px 0;",
+                img(src = "flag.avif", width = "500px", 
+                    style = "border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);")
+              ),
+              tags$p(style = "text-align: center; font-style: italic; color: #555;"),
     ),
 
     
@@ -174,7 +186,16 @@ ui <- page_fluid(
     nav_menu("Other links",
              nav_panel("Citation", 
                        h4("References"),
-                       p("Data sourced from World Bank, US Census, and CIA Factbook.")
+                       tags$ul(
+                         tags$li("World Bank. *Population, Total – Puerto Rico*. https://data.worldbank.org/indicator/SP.POP.TOTL?locations=PR. Accessed 7 May 2025."),
+                         tags$li("NOAA National Centers for Environmental Information. *Global Summary of the Month – Puerto Rico*. https://www.ncei.noaa.gov/access/search/data-search/global-summary-of-the-month?bbox=18.542,-67.324,17.853,-65.413. Accessed 7 May 2025."),
+                         tags$li("U.S. Geological Survey. *National Water Dashboard – Puerto Rico*. https://dashboard.waterdata.usgs.gov/app/nwd/en/. Accessed 7 May 2025."),
+                         tags$li("U.S. Census Bureau. *Decennial Census Data on Race and Ethnicity – Puerto Rico*. https://www.census.gov. Accessed 7 May 2025.")
+                       ),
+                       br(),
+                       tags$p(style = "font-size: 12px; color: #888;",
+                              "Data compiled from World Bank, NOAA, USGS, and U.S. Census Bureau. Visualization created using R Shiny."
+                       )
              ),
              "----",
              "Description:",
@@ -219,7 +240,7 @@ server <- function(input, output, session) {
                  color = "darkred", size = 4) +
       labs(title = paste("Puerto Rico Population:", selected_year),
            x = "Year", y = "Population") +
-      theme_minimal(base_size = 10) +
+      theme_minimal(base_size = 15) +
       theme(
         panel.grid.major = element_line(color = "grey"),
         panel.grid.minor = element_blank(),
