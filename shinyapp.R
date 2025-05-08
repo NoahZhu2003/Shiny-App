@@ -6,7 +6,6 @@ library(readr)
 library(tidyr)
 library(ggplot2)
 
-
 #data analysis
 raw_data <- read_csv("Data/population.csv", skip = 4)
 
@@ -32,6 +31,39 @@ race_data <- data.frame(
   white = c(79.7, 80.5, 80.5, 80.5, 80.5, 75.8, 17.1),
   non_white = c(20.3, 19.5, 19.5, 19.5, 19.5, 24.2, 82.9)
 )
+
+
+raw_temp <- read_csv("Data/temp.csv")
+temp_df <- raw_temp %>%
+  select(DATE, TAVG) %>%            
+  filter(!is.na(TAVG)) %>%          
+  separate(DATE, into = c("year", "month"), sep = "-") %>%  
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    temperature = as.numeric(TAVG)
+  ) %>%
+  select(year, month, temperature)
+
+discharge_df <- read_csv("Data/cleaned_discharge.csv") %>%
+  mutate(
+    discharge = as.numeric(discharge),
+    year = as.integer(year),
+    month = as.integer(month)
+  ) %>%
+  filter(!is.na(year), !is.na(month))
+
+gage_height_df <- read_csv("Data/cleaned_gage_height.csv") %>%
+  mutate(
+    gage_height = as.numeric(gage_height),
+    year = as.integer(year),
+    month = as.integer(month)
+  ) %>%
+  filter(!is.na(year), !is.na(month))
+
+
+
+
 
 
 
@@ -82,7 +114,7 @@ ui <- page_fluid(
     
     
         
-    nav_panel("Map & Key Facts",
+    nav_panel("Map",
               h3("Puerto Rico Map"),
               leafletOutput("island_map"),
               br(),
@@ -105,7 +137,7 @@ ui <- page_fluid(
                 column(6, tableOutput("race_table"),"Race Composition by Decade (%)",
                        tableOutput("race_table"),)
               ),
-              p("The decrease in the White population is primarily due to changes in how the race question was asked and how people responded — not due to population decline. (U.S. Census Bureau, 2021)")
+              p(h6("The decrease in the White population is primarily due to changes in how the race question was asked and how people responded — not due to population decline. (U.S. Census Bureau, 2021)"))
               
               
     ),
@@ -116,10 +148,29 @@ ui <- page_fluid(
     
     
     nav_panel("Hydrology", 
-              h3("Hydrology (Sample Placeholder)"),
-              p("Hydrological data will go here.")
+              h3("Hydrology"),
+              plotOutput("temp_plot"),
+              sliderInput("shared_year", "Select Year:",
+                          min = 1970,
+                          max = 2023,
+                          value = 2023,
+                          step = 1),
+              fluidRow(
+                column(6,
+                       plotOutput("gage_plot", height = "300px")
+                ),
+                column(6,
+                       plotOutput("discharge_plot", height = "300px")
+                )
+              )
+
     ),
     
+    
+    
+    
+    
+      
     nav_menu("Other links",
              nav_panel("Citation", 
                        h4("References"),
@@ -134,6 +185,15 @@ ui <- page_fluid(
     id = "tab"
   )
 )
+
+
+
+
+
+
+
+
+
 
 server <- function(input, output, session) {
 
@@ -171,7 +231,7 @@ server <- function(input, output, session) {
   
   
   
-  #race plot
+  #racial plot
   
   output$race_table <- renderTable({
     race_data
@@ -179,11 +239,11 @@ server <- function(input, output, session) {
   
   
   output$race_pie <- renderPlot({
-    # 取十年档：1960–1969 → 1960，以此类推
+    
+    # make 196x to be 1960
     decade_year <- floor(input$year / 10) * 10
     
-    # 安全检查：只有在 race_data 包含该年份时才继续
-    if (decade_year %in% race_data$year) {
+    if (any(race_data$year == decade_year)) {
       race_slice <- race_data[race_data$year == decade_year, ]
       
       pie_df <- data.frame(
@@ -203,14 +263,56 @@ server <- function(input, output, session) {
         ) +
         scale_fill_manual(values = c("White" = "skyblue", "Non-White" = "darkorange"))
     }
-      
+  })
+  
+  
+  #temp plot
+  output$temp_plot <- renderPlot({
+    req(temp_df)
+    
+    selected_year <- input$shared_year
+    filtered <- temp_df %>% filter(year == selected_year)
+    
+    ggplot(filtered, aes(x = month, y = temperature)) +
+      geom_line(color = "tomato", size = 1.2) +
+      geom_point(color = "black", size = 3) +
+      scale_x_continuous(breaks = 1:12) +
+      scale_y_continuous(limits = c(20, 32)) +
+      labs(title = paste("Average Monthly Temperature in", selected_year),
+           x = "Month", y = "Temperature (°C)") +
+      theme_minimal(base_size = 14) +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        axis.title = element_text(face = "bold")
+      )
+  })
+  
+  #discharge and gage height
+  output$gage_plot <- renderPlot({
+    selected <- gage_height_df %>% filter(year == input$shared_year)
+    
+    ggplot(selected, aes(x = factor(month), y = gage_height)) +
+      geom_col(fill = "steelblue") +
+      labs(title = paste("Average Gage Height -", input$shared_year),
+           x = "Month", y = "Gage Height") +
+      theme_minimal()
+  })
+  
+  
+  output$discharge_plot <- renderPlot({
+    selected <- discharge_df %>% filter(year == input$shared_year)
+    
+    ggplot(selected, aes(x = factor(month), y = discharge)) +
+      geom_col(fill = "darkorange") +
+      labs(title = paste("Average Discharge -", input$shared_year),
+           x = "Month", y = "Discharge") +
+      theme_minimal()
   })
   
 
-  
-  
-  
-  
 }
+  
+
 
 shinyApp(ui = ui, server = server)
+
