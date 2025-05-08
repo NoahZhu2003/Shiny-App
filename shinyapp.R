@@ -97,10 +97,9 @@ ui <- page_fluid(
               p("It sits near the Caribbean Plate and occasionally experiences seismic activity."),
               tags$div(
                 style = "text-align: center; margin: 20px 0;",
-                img(src = "beaches.jpg", width = "500px", 
+                img(src = "beaches.jpg", width = "60%", 
                     style = "border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);")
               ),
-              tags$p(style = "text-align: center; font-style: italic; color: #555;"),
               
               h4("Capital and Cities"),
               p("The capital and largest city is San Juan. Other major cities include Ponce, Mayagüez, and Bayamón."),
@@ -113,7 +112,7 @@ ui <- page_fluid(
               p("Puerto Rico has its own constitution and exercises local self-governance."),
               tags$div(
                 style = "text-align: center; margin: 20px 0;",
-                img(src = "flag.avif", width = "500px", 
+                img(src = "flag.avif", width = "60%", 
                     style = "border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);")
               ),
               tags$p(style = "text-align: center; font-style: italic; color: #555;"),
@@ -146,7 +145,7 @@ ui <- page_fluid(
               
               fluidRow(
                 column(6, plotOutput("race_pie", height = "300px")),
-                column(6, tableOutput("race_table"),"Race Composition by Decade (%)",
+                column(6,"Race Composition by Decade (%)",
                        tableOutput("race_table"),)
               ),
               p(h6("The decrease in the White population is primarily due to changes in how the race question was asked and how people responded — not due to population decline. (U.S. Census Bureau, 2021)"))
